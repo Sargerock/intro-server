@@ -11,9 +11,7 @@ export default (req, res, next) => {
 	}
 	accessToken = accessToken.replace("Bearer ", "");
 	try {
-		const { sub } = jwt.verify(accessToken, SECRET, { ignoreExpiration: true });
-		jwt.verify(req.body.refreshToken, SECRET);
-
+		const { sub } = jwt.verify(accessToken, SECRET);
 		req.accessToken = accessToken;
 		req.id = sub;
 

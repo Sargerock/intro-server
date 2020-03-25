@@ -9,14 +9,14 @@ export const hashPassword = async password => {
 };
 
 export const createTokens = payload => {
-	const accessToken = getToken(payload, EXPIRES_ACCESS);
-	const refreshToken = getToken(payload, EXPIRES_REFRESH);
+	const accessToken = createToken(payload, EXPIRES_ACCESS);
+	const refreshToken = createToken(payload, EXPIRES_REFRESH);
 
 	Auth.create({ refreshToken, accessToken });
 
 	return { accessToken, refreshToken };
 };
 
-export const getToken = (payload, expiresIn) => {
+export const createToken = (payload, expiresIn) => {
 	return jwt.sign(payload, SECRET, { expiresIn });
 };

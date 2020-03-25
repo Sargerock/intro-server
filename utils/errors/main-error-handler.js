@@ -9,5 +9,5 @@ export default (err, req, res, next) => {
 		return;
 	}
 	console.log(err);
-	res.status(err.status || 500).send(err.message);
+	res.status(500).send("Internal server error");
 };

@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 
 import { User, Auth } from "../db";
 import { ValidationError } from "../utils/errors";
-import { createTokens, getToken } from "../utils";
+import { createTokens, createToken } from "../utils";
 import { EXPIRES_ACCESS } from "../config";
 
 export const signUp = async (req, res, next) => {
@@ -14,7 +14,7 @@ export const signUp = async (req, res, next) => {
 			password
 		});
 
-		const tokens = createTokens({ id: user.id, email });
+		const tokens = createTokens({ sub: user.id });
 
 		res.status(201).json({ ...tokens });
 	} catch (e) {
@@ -32,7 +32,7 @@ export const signIn = async (req, res, next) => {
 			return;
 		}
 
-		const tokens = createTokens({ id: user.id, email });
+		const tokens = createTokens({ sub: user.id });
 
 		res.status(201).json({ ...tokens });
 	} catch (e) {
@@ -50,7 +50,7 @@ export const signOut = async (req, res, next) => {
 };
 
 export const refresh = async (req, res, next) => {
-	const { accessToken, id, email } = req;
+	const { accessToken, id } = req;
 	const refreshToken = req.body.refreshToken;
 
 	const auth = await Auth.findOne({ where: { refreshToken } });
@@ -63,7 +63,7 @@ export const refresh = async (req, res, next) => {
 		res.status(401).send("Unauthorized");
 		return;
 	}
-	auth.accessToken = getToken({ id, email }, EXPIRES_ACCESS);
+	auth.accessToken = createToken({ sub: id }, EXPIRES_ACCESS);
 	auth.save();
 
 	res.status(200).json({ accessToken: auth.accessToken });
