@@ -1,8 +1,8 @@
-import { ValidationError } from ".";
+import { IntroError } from ".";
 
 export default (err, req, res, next) => {
-	if (err instanceof ValidationError) {
-		res.status(400).send(err.message);
+	if (err instanceof IntroError) {
+		res.status(err.status).send(err.message);
 		return;
 	} else if (err.name === "ValidationError") {
 		res.status(400).send("Wrong data provided");

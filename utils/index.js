@@ -20,3 +20,11 @@ export const createTokens = payload => {
 export const createToken = (payload, expiresIn) => {
 	return jwt.sign(payload, SECRET, { expiresIn });
 };
+
+export const getAccessToken = request => {
+	let accessToken = request.header("x-access-token");
+	if (!accessToken) {
+		throw new ValidationError("Access token is required");
+	}
+	return accessToken.replace("Bearer ", "");
+};

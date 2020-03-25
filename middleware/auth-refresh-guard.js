@@ -1,24 +1,27 @@
 import jwt from "jsonwebtoken";
 
-import { ValidationError } from "../utils/errors";
+import { AuthorizationError } from "../utils/errors";
 import { SECRET } from "../config";
+import { getAccessToken } from "../utils";
+import { User } from "../db";
 
-export default (req, res, next) => {
-	let accessToken = req.header("x-access-token");
-	if (!accessToken) {
-		next(new ValidationError());
-		return;
-	}
-	accessToken = accessToken.replace("Bearer ", "");
+export default async (req, res, next) => {
 	try {
-		const { sub } = jwt.verify(accessToken, SECRET, { ignoreExpiration: true });
+		let accessToken = getAccessToken(req);
+
+		const { sub } = jwt.verify(accessToken, SECRET, {
+			ignoreExpiration: true
+		});
 		jwt.verify(req.body.refreshToken, SECRET);
+
+		const user = await User.findOne({ where: { id: sub } });
+		if (!user) throw new AuthorizationError();
 
 		req.accessToken = accessToken;
 		req.id = sub;
 
 		next();
 	} catch (e) {
-		res.status(401).send("Unauthorized");
+		next(new AuthorizationError());
 	}
 };

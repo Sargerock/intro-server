@@ -40,16 +40,20 @@ export const signIn = async (req, res, next) => {
 	}
 };
 
-export const signOut = async (req, res, next) => {
+export const signOut = async (req, res) => {
 	const { accessToken } = req;
 
 	const auth = await Auth.findOne({ where: { accessToken } });
+	if (!auth) {
+		res.status(404).send("Not found");
+		return;
+	}
 	auth.destroy();
 
 	res.status(200).send("Ok");
 };
 
-export const refresh = async (req, res, next) => {
+export const refresh = async (req, res) => {
 	const { accessToken, id } = req;
 	const refreshToken = req.body.refreshToken;
 

@@ -18,10 +18,7 @@ export const createPost = async (req, res) => {
 	const { text } = req.body;
 
 	const user = await User.findOne({ where: { id } });
-	const post = await user.createPost(
-		{ text },
-		{ attributes: ["id", "text", "userId"] }
-	);
+	const post = await user.createPost({ text });
 
 	res.status(201).json(post);
 };
