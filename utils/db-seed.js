@@ -7,7 +7,7 @@ export default async () => {
 		password: "testdrive"
 	});
 
-	for (let i = 0; i < 10; i++) {
+	for (let i = 0; i < 20; i++) {
 		await user.createPost({ text: `Post text ${i}` });
 	}
 };

@@ -14,7 +14,7 @@ import postSchema from "../utils/schemas/post-schema";
 //  /api/posts
 const route = express.Router();
 
-route.get("/", postQueryValidator, getPosts);
+route.get("/", [authGuard, postQueryValidator], getPosts);
 route.post("/", [authGuard, createBodyValidator(postSchema)], createPost);
 route.delete("/:id", authGuard, deletePost);
 route.put("/:id", [authGuard, createBodyValidator(postSchema)], updatePost);

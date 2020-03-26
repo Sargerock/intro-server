@@ -69,6 +69,12 @@ export const refresh = async (req, res) => {
 	}
 	auth.accessToken = createToken({ sub: id }, EXPIRES_ACCESS);
 	auth.save();
-
 	res.status(200).json({ accessToken: auth.accessToken });
+};
+
+export const getUser = async (req, res) => {
+	const { id } = req;
+	const { userName } = await User.findByPk(id);
+
+	res.status(200).json({ id, userName });
 };

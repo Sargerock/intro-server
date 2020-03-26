@@ -3,14 +3,15 @@ import { Post, User } from "../db";
 export const getPosts = async (req, res) => {
 	const { sort, order, offset, limit } = req.query;
 
-	const posts = await Post.findAll({
+	const { rows, count } = await Post.findAndCountAll({
 		attributes: ["id", "text", "userId"],
+		include: [{ model: User, attributes: ["userName"] }],
 		order: [[sort || "createdAt", order || "desc"]],
 		offset,
 		limit
 	});
 
-	res.status(200).json(posts);
+	res.status(200).json({ posts: rows, totalCount: count });
 };
 
 export const createPost = async (req, res) => {
@@ -20,7 +21,14 @@ export const createPost = async (req, res) => {
 	const user = await User.findOne({ where: { id } });
 	const post = await user.createPost({ text });
 
-	res.status(201).json(post);
+	res
+		.status(201)
+		.json({
+			id: post.id,
+			text: post.text,
+			userId: post.userId,
+			user: { userName: user.userName }
+		});
 };
 
 export const deletePost = async (req, res) => {
