@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 
-import { PORT } from "./config";
+import { PORT, SEED } from "./config";
 import useRoutes from "./routers";
 import sequelize from "./db";
 import mainErrorHandler from "./utils/errors/main-error-handler";
@@ -14,8 +14,8 @@ app.use(express.json());
 useRoutes(app);
 app.use(mainErrorHandler);
 
-sequelize.sync({ force: true }).then(async () => {
-	await dbSeed();
+sequelize.sync({ force: SEED }).then(async () => {
+	if (SEED) await dbSeed();
 	console.log(`Database successfully synchronized`);
 	app.listen(PORT || 8000, () => {
 		console.log("Server is running on port: ", PORT);

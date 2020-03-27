@@ -10,5 +10,6 @@ export const {
 	HOST,
 	SECRET,
 	EXPIRES_ACCESS,
-	EXPIRES_REFRESH
+	EXPIRES_REFRESH,
+	SEED
 } = process.env;
