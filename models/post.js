@@ -6,7 +6,7 @@ export default (sequelize, type) => {
 			autoIncrement: true
 		},
 		text: {
-			type: type.STRING,
+			type: type.STRING(512),
 			allowNull: false
 		}
 	});

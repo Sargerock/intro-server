@@ -1,4 +1,5 @@
 import { Post, User } from "../db";
+import { HandledError } from "../utils/errors";
 
 export const getPosts = async (req, res) => {
 	const { sort, order, offset, limit } = req.query;
@@ -21,23 +22,21 @@ export const createPost = async (req, res) => {
 	const user = await User.findOne({ where: { id } });
 	const post = await user.createPost({ text });
 
-	res
-		.status(201)
-		.json({
-			id: post.id,
-			text: post.text,
-			userId: post.userId,
-			user: { userName: user.userName }
-		});
+	res.status(201).json({
+		id: post.id,
+		text: post.text,
+		userId: post.userId,
+		user: { userName: user.userName }
+	});
 };
 
-export const deletePost = async (req, res) => {
+export const deletePost = async (req, res, next) => {
 	const userId = req.id;
 	const postId = req.params.id;
 
 	const post = await Post.findOne({ where: { id: postId, userId } });
 	if (!post) {
-		res.status(404).send("Not found");
+		next(new HandledError("Not found", 404));
 		return;
 	}
 	post.destroy();
@@ -52,11 +51,11 @@ export const updatePost = async (req, res, next) => {
 
 	const post = await Post.findOne({ where: { id: postId, userId } });
 	if (!post) {
-		res.status(404).send("Not found");
+		next(new HandledError("Not found", 404));
 		return;
 	}
 
-	await post.update({ ...newPost }, { attributes: ["id", "text", "userId"] });
+	await post.update({ ...newPost });
 
 	res.status(200).json(post);
 };

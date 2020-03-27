@@ -10,17 +10,17 @@ export default (sequelize, type) => {
 				autoIncrement: true
 			},
 			userName: {
-				type: type.STRING,
+				type: type.STRING(32),
 				unique: true,
 				allowNull: false
 			},
 			email: {
-				type: type.STRING,
+				type: type.STRING(64),
 				unique: true,
 				allowNull: false
 			},
 			password: {
-				type: type.STRING,
+				type: type.STRING(64),
 				allowNull: false
 			}
 		},

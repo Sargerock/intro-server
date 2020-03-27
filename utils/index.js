@@ -23,16 +23,22 @@ export const createToken = (payload, expiresIn) => {
 };
 
 export const getAccessToken = request => {
-	let accessToken = request.header("x-access-token");
+	let accessToken = request.header("Authorization");
 	if (!accessToken) {
 		throw new ValidationError("Access token is required");
 	}
 	return accessToken.replace("Bearer ", "");
 };
 
-export const createBodyValidator = schema => async (req, res, next) => {
+export const createRequestValidator = (
+	bodySchema,
+	paramsSchema,
+	querySchema
+) => async (req, res, next) => {
 	try {
-		await schema.validate(req.body);
+		if (bodySchema) await bodySchema.validate(req.body);
+		if (paramsSchema) await paramsSchema.validate(req.params);
+		if (querySchema) await querySchema.validate(req.query);
 		next();
 	} catch (e) {
 		next(new ValidationError());

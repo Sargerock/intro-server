@@ -1,22 +1,22 @@
-export class IntroError extends Error {
-	constructor(message) {
+export class HandledError extends Error {
+	constructor(message, status) {
 		super(message);
-		this.status = 500;
+		this.status = status || 500;
 	}
 }
 
-export class ValidationError extends IntroError {
-	constructor(message) {
+export class ValidationError extends HandledError {
+	constructor(message, status) {
 		super(message || "Incorrect data provided");
 		this.name = this.constructor.name;
-		this.status = 400;
+		this.status = status || 400;
 	}
 }
 
-export class AuthorizationError extends IntroError {
-	constructor(message) {
+export class AuthorizationError extends HandledError {
+	constructor(message, status) {
 		super(message || "Unauthorized");
 		this.name = this.constructor.name;
-		this.status = 401;
+		this.status = status || 401;
 	}
 }

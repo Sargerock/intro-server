@@ -7,16 +7,20 @@ import {
 	updatePost
 } from "../controllers/posts-controller";
 import authGuard from "../middleware/auth-guard";
-import postQueryValidator from "../middleware/post-query-validator";
-import { createBodyValidator } from "../utils";
+import { createRequestValidator } from "../utils";
 import postSchema from "../utils/schemas/post-schema";
+import postQuerySchema from "../utils/schemas/post-query-schema";
 
 //  /api/posts
 const route = express.Router();
 
-route.get("/", [authGuard, postQueryValidator], getPosts);
-route.post("/", [authGuard, createBodyValidator(postSchema)], createPost);
+route.get(
+	"/",
+	[authGuard, createRequestValidator(null, null, postQuerySchema)],
+	getPosts
+);
+route.post("/", [authGuard, createRequestValidator(postSchema)], createPost);
 route.delete("/:id", authGuard, deletePost);
-route.put("/:id", [authGuard, createBodyValidator(postSchema)], updatePost);
+route.put("/:id", [authGuard, createRequestValidator(postSchema)], updatePost);
 
 export default route;

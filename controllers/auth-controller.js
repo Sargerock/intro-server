@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 
 import { User, Auth } from "../db";
-import { ValidationError } from "../utils/errors";
+import { ValidationError, AuthorizationError } from "../utils/errors";
 import { createTokens, createToken } from "../utils";
 import { EXPIRES_ACCESS } from "../config";
 
@@ -40,12 +40,12 @@ export const signIn = async (req, res, next) => {
 	}
 };
 
-export const signOut = async (req, res) => {
+export const signOut = async (req, res, next) => {
 	const { accessToken } = req;
 
 	const auth = await Auth.findOne({ where: { accessToken } });
 	if (!auth) {
-		res.status(404).send("Not found");
+		next(new HandledError("Not found", 404));
 		return;
 	}
 	auth.destroy();
@@ -53,18 +53,18 @@ export const signOut = async (req, res) => {
 	res.status(200).send("Ok");
 };
 
-export const refresh = async (req, res) => {
+export const refresh = async (req, res, next) => {
 	const { accessToken, id } = req;
 	const refreshToken = req.body.refreshToken;
 
 	const auth = await Auth.findOne({ where: { refreshToken } });
 	if (!auth) {
-		res.status(401).send("Unauthorized");
+		next(new AuthorizationError());
 		return;
 	}
 	if (auth.accessToken !== accessToken) {
 		auth.destroy();
-		res.status(401).send("Unauthorized");
+		next(new AuthorizationError());
 		return;
 	}
 	auth.accessToken = createToken({ sub: id }, EXPIRES_ACCESS);
