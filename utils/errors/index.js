@@ -6,10 +6,11 @@ export class HandledError extends Error {
 }
 
 export class ValidationError extends HandledError {
-	constructor(message, status) {
+	constructor(errors, message, status) {
 		super(message || "Incorrect data provided");
 		this.name = this.constructor.name;
 		this.status = status || 400;
+		this.errors = errors || {};
 	}
 }
 

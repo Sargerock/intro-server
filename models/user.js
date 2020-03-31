@@ -1,26 +1,29 @@
+import Sequelize from "sequelize";
+
 import { hashPassword } from "../utils";
 
-export default (sequelize, type) => {
-	return sequelize.define(
-		"user",
+export class User extends Sequelize.Model {}
+
+export const initUser = sequelize => {
+	User.init(
 		{
 			id: {
-				type: type.INTEGER,
+				type: Sequelize.INTEGER,
 				primaryKey: true,
 				autoIncrement: true
 			},
 			userName: {
-				type: type.STRING(32),
+				type: Sequelize.STRING(32),
 				unique: true,
 				allowNull: false
 			},
 			email: {
-				type: type.STRING(64),
+				type: Sequelize.STRING(64),
 				unique: true,
 				allowNull: false
 			},
 			password: {
-				type: type.STRING(64),
+				type: Sequelize.STRING(64),
 				allowNull: false
 			}
 		},
@@ -29,7 +32,14 @@ export default (sequelize, type) => {
 				beforeCreate: async user => {
 					user.password = await hashPassword(user.password);
 				}
-			}
+			},
+			sequelize,
+			modelName: "user"
 		}
 	);
+
+	User.prototype.toJSON = function() {
+		const { id, userName } = this.get();
+		return { id, userName };
+	};
 };

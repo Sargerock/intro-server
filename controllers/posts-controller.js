@@ -1,4 +1,5 @@
-import { Post, User } from "../db";
+import { Post } from "../models/post";
+import { User } from "../models/user";
 import { HandledError } from "../utils/errors";
 
 export const getPosts = async (req, res) => {
@@ -16,16 +17,13 @@ export const getPosts = async (req, res) => {
 };
 
 export const createPost = async (req, res) => {
-	const { id } = req;
+	const { user } = req;
 	const { text } = req.body;
 
-	const user = await User.findOne({ where: { id } });
 	const post = await user.createPost({ text });
 
 	res.status(201).json({
-		id: post.id,
-		text: post.text,
-		userId: post.userId,
+		...post.toJSON(),
 		user: { userName: user.userName }
 	});
 };
@@ -47,7 +45,7 @@ export const deletePost = async (req, res, next) => {
 export const updatePost = async (req, res, next) => {
 	const userId = req.id;
 	const postId = req.params.id;
-	const newPost = req.body;
+	const text = req.body.text;
 
 	const post = await Post.findOne({ where: { id: postId, userId } });
 	if (!post) {
@@ -55,7 +53,7 @@ export const updatePost = async (req, res, next) => {
 		return;
 	}
 
-	await post.update({ ...newPost });
+	await post.update({ text });
 
 	res.status(200).json(post);
 };

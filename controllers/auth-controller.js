@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 
-import { User, Auth } from "../db";
+import { User } from "../models/user";
+import { Auth } from "../models/auth";
 import { ValidationError, AuthorizationError } from "../utils/errors";
 import { createTokens, createToken } from "../utils";
 import { EXPIRES_ACCESS } from "../config";
@@ -14,9 +15,10 @@ export const signUp = async (req, res, next) => {
 			password
 		});
 
-		const tokens = createTokens({ sub: user.id });
+		const { accessToken, refreshToken } = createTokens({ id: user.id });
+		Auth.create({ refreshToken, accessToken });
 
-		res.status(201).json({ ...tokens });
+		res.status(201).json({ accessToken, refreshToken });
 	} catch (e) {
 		next(new ValidationError("Email already in use"));
 	}
@@ -32,9 +34,10 @@ export const signIn = async (req, res, next) => {
 			return;
 		}
 
-		const tokens = createTokens({ sub: user.id });
+		const { accessToken, refreshToken } = createTokens({ id: user.id });
+		Auth.create({ refreshToken, accessToken });
 
-		res.status(201).json({ ...tokens });
+		res.status(201).json({ accessToken, refreshToken });
 	} catch (e) {
 		next(new ValidationError());
 	}
@@ -67,14 +70,12 @@ export const refresh = async (req, res, next) => {
 		next(new AuthorizationError());
 		return;
 	}
-	auth.accessToken = createToken({ sub: id }, EXPIRES_ACCESS);
+	auth.accessToken = createToken({ id }, EXPIRES_ACCESS);
 	auth.save();
 	res.status(200).json({ accessToken: auth.accessToken });
 };
 
 export const getUser = async (req, res) => {
-	const { id } = req;
-	const { userName } = await User.findByPk(id);
-
-	res.status(200).json({ id, userName });
+	const { user } = req;
+	res.status(200).json(user);
 };

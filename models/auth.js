@@ -1,19 +1,26 @@
-export default (sequelize, type) => {
-	return sequelize.define("auth", {
-		id: {
-			type: type.INTEGER,
-			primaryKey: true,
-			autoIncrement: true
+import Sequelize from "sequelize";
+
+export class Auth extends Sequelize.Model {}
+
+export const initAuth = sequelize => {
+	Auth.init(
+		{
+			id: {
+				type: Sequelize.INTEGER,
+				primaryKey: true,
+				autoIncrement: true
+			},
+			refreshToken: {
+				type: Sequelize.STRING,
+				unique: true,
+				allowNull: false
+			},
+			accessToken: {
+				type: Sequelize.STRING,
+				unique: true,
+				allowNull: false
+			}
 		},
-		refreshToken: {
-			type: type.STRING,
-			unique: true,
-			allowNull: false
-		},
-		accessToken: {
-			type: type.STRING,
-			unique: true,
-			allowNull: false
-		}
-	});
+		{ sequelize, modelName: "auth" }
+	);
 };
