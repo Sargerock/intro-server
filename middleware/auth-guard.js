@@ -18,6 +18,8 @@ export default async (req, res, next) => {
 		req.user = user;
 		next();
 	} catch (e) {
+		console.log(e);
+
 		next(new AuthorizationError());
 	}
 };
