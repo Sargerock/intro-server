@@ -5,7 +5,7 @@ import { PORT, SEED } from "./config";
 import useRoutes from "./routers";
 import sequelize from "./db";
 import mainErrorHandler from "./utils/errors/main-error-handler";
-import dbSeed from "./utils/db-seed";
+import dbSeed from "./db/db-seed";
 
 const app = express();
 

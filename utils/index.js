@@ -2,7 +2,6 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 import { SECRET, EXPIRES_ACCESS, EXPIRES_REFRESH } from "../config";
-import { Auth } from "../db";
 import { ValidationError } from "./errors";
 
 export const hashPassword = async password => {
@@ -12,8 +11,6 @@ export const hashPassword = async password => {
 export const createTokens = payload => {
 	const accessToken = createToken(payload, EXPIRES_ACCESS);
 	const refreshToken = createToken(payload, EXPIRES_REFRESH);
-
-	Auth.create({ refreshToken, accessToken });
 
 	return { accessToken, refreshToken };
 };
@@ -36,11 +33,15 @@ export const createRequestValidator = (
 	querySchema
 ) => async (req, res, next) => {
 	try {
-		if (bodySchema) await bodySchema.validate(req.body);
-		if (paramsSchema) await paramsSchema.validate(req.params);
-		if (querySchema) await querySchema.validate(req.query);
+		if (bodySchema) await bodySchema.validate(req.body, { abortEarly: false });
+		if (paramsSchema)
+			await paramsSchema.validate(req.params, { abortEarly: false });
+		if (querySchema)
+			await querySchema.validate(req.query, { abortEarly: false });
 		next();
 	} catch (e) {
-		next(new ValidationError());
+		const errors = {};
+		e.inner.forEach(err => (errors[err.path] = err.message));
+		next(new ValidationError(errors));
 	}
 };

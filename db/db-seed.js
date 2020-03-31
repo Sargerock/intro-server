@@ -1,4 +1,4 @@
-import { User } from "../db";
+import { User } from ".";
 
 export default async () => {
 	const user1 = await User.create({
