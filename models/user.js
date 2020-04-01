@@ -2,7 +2,12 @@ import Sequelize from "sequelize";
 
 import { hashPassword } from "../utils";
 
-export class User extends Sequelize.Model {}
+export class User extends Sequelize.Model {
+	toJSON() {
+		const { id, userName } = this.get();
+		return { id, userName };
+	}
+}
 
 export const initUser = sequelize => {
 	User.init(
@@ -38,8 +43,8 @@ export const initUser = sequelize => {
 		}
 	);
 
-	User.prototype.toJSON = function() {
-		const { id, userName } = this.get();
-		return { id, userName };
-	};
+	// User.prototype.toJSON = function() {
+	// 	const { id, userName } = this.get();
+	// 	return { id, userName };
+	// };
 };

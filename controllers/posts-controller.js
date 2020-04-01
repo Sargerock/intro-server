@@ -28,15 +28,12 @@ export const createPost = async (req, res) => {
 	});
 };
 
-export const deletePost = async (req, res, next) => {
+export const deletePost = async (req, res) => {
 	const userId = req.id;
 	const postId = req.params.id;
 
 	const post = await Post.findOne({ where: { id: postId, userId } });
-	if (!post) {
-		next(new HandledError("Not found", 404));
-		return;
-	}
+	if (!post) throw new HandledError("Not found", 404);
 	post.destroy();
 
 	res.status(200).json({ id: postId });
@@ -48,10 +45,7 @@ export const updatePost = async (req, res, next) => {
 	const text = req.body.text;
 
 	const post = await Post.findOne({ where: { id: postId, userId } });
-	if (!post) {
-		next(new HandledError("Not found", 404));
-		return;
-	}
+	if (!post) throw new HandledError("Not found", 404);
 
 	await post.update({ text });
 

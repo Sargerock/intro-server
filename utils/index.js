@@ -32,16 +32,9 @@ export const createRequestValidator = (
 	paramsSchema,
 	querySchema
 ) => async (req, res, next) => {
-	try {
-		if (bodySchema) await bodySchema.validate(req.body, { abortEarly: false });
-		if (paramsSchema)
-			await paramsSchema.validate(req.params, { abortEarly: false });
-		if (querySchema)
-			await querySchema.validate(req.query, { abortEarly: false });
-		next();
-	} catch (e) {
-		const errors = {};
-		e.inner.forEach(err => (errors[err.path] = err.message));
-		next(new ValidationError(errors));
-	}
+	if (bodySchema) await bodySchema.validate(req.body, { abortEarly: false });
+	if (paramsSchema)
+		await paramsSchema.validate(req.params, { abortEarly: false });
+	if (querySchema) await querySchema.validate(req.query, { abortEarly: false });
+	next();
 };

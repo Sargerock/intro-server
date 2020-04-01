@@ -17,9 +17,4 @@ export const initPost = sequelize => {
 		},
 		{ sequelize, modelName: "post" }
 	);
-
-	Post.prototype.toJSON = function() {
-		const { id, text, userId } = this.get();
-		return { id, text, userId };
-	};
 };

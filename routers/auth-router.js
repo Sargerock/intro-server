@@ -1,4 +1,4 @@
-import express from "express";
+import router from "express-promise-router";
 
 import {
 	signUp,
@@ -13,7 +13,7 @@ import { createRequestValidator } from "../utils";
 import userSchema from "../utils/schemas/user-schema";
 
 //  /api/auth
-const route = express.Router();
+const route = router();
 
 route.post("/sign-up", createRequestValidator(userSchema), signUp);
 route.post("/sign-in", signIn);

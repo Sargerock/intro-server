@@ -8,39 +8,30 @@ import { EXPIRES_ACCESS } from "../config";
 
 export const signUp = async (req, res, next) => {
 	const { userName, email, password } = req.body;
-	try {
-		const user = await User.create({
-			userName,
-			email,
-			password
-		});
 
-		const { accessToken, refreshToken } = createTokens({ id: user.id });
-		Auth.create({ refreshToken, accessToken });
+	const user = await User.create({
+		userName,
+		email,
+		password
+	});
 
-		res.status(201).json({ accessToken, refreshToken });
-	} catch (e) {
-		next(new ValidationError("Email already in use"));
-	}
+	const { accessToken, refreshToken } = createTokens({ id: user.id });
+	Auth.create({ refreshToken, accessToken });
+
+	res.status(201).json({ accessToken, refreshToken });
 };
 
 export const signIn = async (req, res, next) => {
-	try {
-		const { email, password } = req.body;
-		const user = await User.findOne({ where: { email } });
-		const match = await bcrypt.compare(password, user.password);
-		if (!match) {
-			next(new ValidationError("Incorrect email or password"));
-			return;
-		}
+	const { email, password } = req.body;
+	const user = await User.findOne({ where: { email } });
+	if (!user) throw new ValidationError("Incorrect email or password");
+	const match = await bcrypt.compare(password, user.password);
+	if (!match) throw new ValidationError("Incorrect email or password");
 
-		const { accessToken, refreshToken } = createTokens({ id: user.id });
-		Auth.create({ refreshToken, accessToken });
+	const { accessToken, refreshToken } = createTokens({ id: user.id });
+	Auth.create({ refreshToken, accessToken });
 
-		res.status(201).json({ accessToken, refreshToken });
-	} catch (e) {
-		next(new ValidationError());
-	}
+	res.status(201).json({ accessToken, refreshToken });
 };
 
 export const signOut = async (req, res, next) => {

@@ -1,4 +1,4 @@
-import express from "express";
+import router from "express-promise-router";
 
 import {
 	getPosts,
@@ -12,7 +12,7 @@ import postSchema from "../utils/schemas/post-schema";
 import postQuerySchema from "../utils/schemas/post-query-schema";
 
 //  /api/posts
-const route = express.Router();
+const route = router();
 
 route.get(
 	"/",
