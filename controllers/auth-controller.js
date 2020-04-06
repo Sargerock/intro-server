@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 
-import { User } from "../models/user";
-import { Auth } from "../models/auth";
+import { User, Auth } from "../models";
 import { ValidationError, AuthorizationError } from "../utils/errors";
 import { createTokens, createToken } from "../utils";
 import { EXPIRES_ACCESS } from "../config";
@@ -12,7 +11,7 @@ export const signUp = async (req, res) => {
 	const user = await User.create({
 		userName,
 		email,
-		password
+		password,
 	});
 
 	const { accessToken, refreshToken } = createTokens({ id: user.id });
