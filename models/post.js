@@ -2,19 +2,25 @@ import Sequelize from "sequelize";
 
 export class Post extends Sequelize.Model {}
 
-export const initPost = sequelize => {
+export default (sequelize) => {
 	Post.init(
 		{
 			id: {
 				type: Sequelize.INTEGER,
 				primaryKey: true,
-				autoIncrement: true
+				autoIncrement: true,
 			},
 			text: {
 				type: Sequelize.STRING(512),
-				allowNull: false
-			}
+				allowNull: false,
+			},
 		},
 		{ sequelize, modelName: "post" }
 	);
+
+	Post.associate = (models) => {
+		Post.belongsTo(models.user);
+	};
+
+	return Post;
 };

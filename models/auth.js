@@ -2,25 +2,27 @@ import Sequelize from "sequelize";
 
 export class Auth extends Sequelize.Model {}
 
-export const initAuth = sequelize => {
+export default (sequelize) => {
 	Auth.init(
 		{
 			id: {
 				type: Sequelize.INTEGER,
 				primaryKey: true,
-				autoIncrement: true
+				autoIncrement: true,
 			},
 			refreshToken: {
 				type: Sequelize.STRING,
 				unique: true,
-				allowNull: false
+				allowNull: false,
 			},
 			accessToken: {
 				type: Sequelize.STRING,
 				unique: true,
-				allowNull: false
-			}
+				allowNull: false,
+			},
 		},
 		{ sequelize, modelName: "auth" }
 	);
+
+	return Auth;
 };

@@ -1,13 +1,19 @@
 import { HandledError } from ".";
+import e from "express";
 
 export default (err, req, res, next) => {
 	console.log(err);
 	if (err instanceof HandledError) {
 		res.status(err.status).json({ message: err.message, errors: err.errors });
 	} else if (err.name === "ValidationError") {
-		const errors = {};
-		err.inner.forEach(err => (errors[err.path] = err.message));
-		res.status(400).json({ message: err.message, errors });
+		const errors = err.inner.reduce(
+			(acc, error) => ({
+				...acc,
+				[error.path]: [...(acc[error.path] || []), error.message],
+			}),
+			{}
+		);
+		res.status(400).json({ message: "Validation error", errors });
 	} else if (err.name === "TokenExpiredError") {
 		res.status(401).json({ message: err.message });
 	} else {

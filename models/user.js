@@ -9,42 +9,43 @@ export class User extends Sequelize.Model {
 	}
 }
 
-export const initUser = sequelize => {
+export default (sequelize) => {
 	User.init(
 		{
 			id: {
 				type: Sequelize.INTEGER,
 				primaryKey: true,
-				autoIncrement: true
+				autoIncrement: true,
 			},
 			userName: {
 				type: Sequelize.STRING(32),
 				unique: true,
-				allowNull: false
+				allowNull: false,
 			},
 			email: {
 				type: Sequelize.STRING(64),
 				unique: true,
-				allowNull: false
+				allowNull: false,
 			},
 			password: {
 				type: Sequelize.STRING(64),
-				allowNull: false
-			}
+				allowNull: false,
+			},
 		},
 		{
 			hooks: {
-				beforeCreate: async user => {
+				beforeCreate: async (user) => {
 					user.password = await hashPassword(user.password);
-				}
+				},
 			},
 			sequelize,
-			modelName: "user"
+			modelName: "user",
 		}
 	);
 
-	// User.prototype.toJSON = function() {
-	// 	const { id, userName } = this.get();
-	// 	return { id, userName };
-	// };
+	User.associate = (models) => {
+		User.hasMany(models.post);
+	};
+
+	return User;
 };
