@@ -7,14 +7,14 @@ Create .env from .env.example and fill empty variables
 In the project directory, run:
 
 ### `npm i`
-
+### `npx sequelize-cli db:migrate`
 ### `npm start`
 
 To start server.
 
 ### `npm run seed`
 
-To start server with RECREATING db tables with some data and default user
+To start server with some data and default user
 
 ### `npm run dev`
 
