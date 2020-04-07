@@ -60,7 +60,7 @@ export const refresh = async (req, res) => {
 	res.status(200).json({ accessToken: auth.accessToken });
 };
 
-export const getUser = async (req, res) => {
+export const getAuthorizedUser = async (req, res) => {
 	const { user } = req;
 	res.status(200).json(user);
 };

@@ -3,10 +3,18 @@ import { HandledError } from "../utils/errors";
 
 export const getPosts = async (req, res) => {
 	const { sort, order, offset, limit } = req.query;
+	const userName = req.params.userName;
+
+	const include = {
+		model: User,
+		attributes: ["userName"],
+	};
+
+	if (userName) include.where = { userName };
 
 	const { rows, count } = await Post.findAndCountAll({
 		attributes: ["id", "text", "userId"],
-		include: [{ model: User, attributes: ["userName"] }],
+		include: [include],
 		order: [[sort || "createdAt", order || "desc"]],
 		offset,
 		limit,
@@ -38,7 +46,7 @@ export const deletePost = async (req, res) => {
 	res.status(200).json({ id: postId });
 };
 
-export const updatePost = async (req, res, next) => {
+export const updatePost = async (req, res) => {
 	const userId = req.id;
 	const postId = req.params.id;
 	const text = req.body.text;

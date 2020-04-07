@@ -4,7 +4,7 @@ import {
 	getPosts,
 	createPost,
 	deletePost,
-	updatePost
+	updatePost,
 } from "../controllers/posts-controller";
 import authGuard from "../middleware/auth-guard";
 import { createRequestValidator } from "../utils";
@@ -15,7 +15,7 @@ import postQuerySchema from "../utils/schemas/post-query-schema";
 const route = router();
 
 route.get(
-	"/",
+	"/:userName?",
 	[authGuard, createRequestValidator(null, null, postQuerySchema)],
 	getPosts
 );

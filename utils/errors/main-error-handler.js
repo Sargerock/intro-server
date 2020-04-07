@@ -1,5 +1,4 @@
 import { HandledError } from ".";
-import e from "express";
 
 export default (err, req, res, next) => {
 	console.log(err);
@@ -9,7 +8,7 @@ export default (err, req, res, next) => {
 		const errors = err.inner.reduce(
 			(acc, error) => ({
 				...acc,
-				[error.path]: [...(acc[error.path] || []), error.message],
+				[error.path]: [...(acc[error.path] || []), error.message + "\n"],
 			}),
 			{}
 		);

@@ -9,7 +9,7 @@ export default async (req, res, next) => {
 	let accessToken = getAccessToken(req);
 
 	const { id } = jwt.verify(accessToken, SECRET, {
-		ignoreExpiration: true
+		ignoreExpiration: true,
 	});
 	jwt.verify(req.body.refreshToken, SECRET);
 
