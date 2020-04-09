@@ -5,6 +5,7 @@ import {
 	createPost,
 	deletePost,
 	updatePost,
+	findTags,
 } from "../controllers/posts-controller";
 import authGuard from "../middleware/auth-guard";
 import { createRequestValidator } from "../utils";
@@ -14,6 +15,7 @@ import postQuerySchema from "../utils/schemas/post-query-schema";
 //  /api/posts
 const route = router();
 
+route.get("/find/:tag", authGuard, findTags);
 route.get(
 	"/:userName?",
 	[authGuard, createRequestValidator(null, null, postQuerySchema)],

@@ -18,7 +18,7 @@ app.use(
 useRoutes(app);
 app.use(mainErrorHandler);
 
-sequelize.sync().then(async () => {
+sequelize.sync({ force: SEED }).then(async () => {
 	if (SEED) await dbSeed();
 	console.log(`Database successfully synchronized`);
 	app.listen(PORT || 8000, () => {

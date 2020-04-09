@@ -20,6 +20,7 @@ export default (sequelize) => {
 
 	Post.associate = (models) => {
 		Post.belongsTo(models.user);
+		Post.belongsToMany(models.tag, { through: "posts-tags" });
 	};
 
 	return Post;

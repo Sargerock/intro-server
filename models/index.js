@@ -26,3 +26,4 @@ export const initModels = (sequelize) => {
 export { Auth } from "./auth";
 export { Post } from "./post";
 export { User } from "./user";
+export { Tag } from "./tag";

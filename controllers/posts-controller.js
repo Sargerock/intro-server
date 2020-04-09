@@ -1,20 +1,29 @@
-import { Post, User } from "../models";
+const { Op } = require("sequelize");
+
+import { Post, User, Tag } from "../models";
 import { HandledError } from "../utils/errors";
 
 export const getPosts = async (req, res) => {
-	const { sort, order, offset, limit } = req.query;
+	const { sort, order, offset, limit, tag } = req.query;
 	const userName = req.params.userName;
 
-	const include = {
-		model: User,
-		attributes: ["userName"],
-	};
+	const include = [
+		{
+			model: User,
+			attributes: ["userName"],
+		},
+		{
+			model: Tag,
+			attributes: ["tag"],
+		},
+	];
 
-	if (userName) include.where = { userName };
+	if (userName) include[0].where = { userName };
+	if (tag) include[1].where = { tag };
 
 	const { rows, count } = await Post.findAndCountAll({
-		attributes: ["id", "text", "userId"],
-		include: [include],
+		attributes: ["id", "text", "userId", "createdAt"],
+		include: include,
 		order: [[sort || "createdAt", order || "desc"]],
 		offset,
 		limit,
@@ -25,9 +34,14 @@ export const getPosts = async (req, res) => {
 
 export const createPost = async (req, res) => {
 	const { user } = req;
-	const { text } = req.body;
+	const { text, tags } = req.body;
 
 	const post = await user.createPost({ text });
+
+	for (let i = 0; i < tags.length; i++) {
+		const [tag] = await Tag.findOrCreate({ where: { tag: tags[i] } });
+		post.addTag(tag);
+	}
 
 	res.status(201).json({
 		...post.toJSON(),
@@ -57,4 +71,15 @@ export const updatePost = async (req, res) => {
 	await post.update({ text });
 
 	res.status(200).json(post);
+};
+
+export const findTags = async (req, res) => {
+	const tag = req.params.tag;
+
+	const users = await Tag.findAll({
+		where: { tag: { [Op.like]: `${tag}%` } },
+		limit: 5,
+	});
+
+	res.status(200).json(users);
 };

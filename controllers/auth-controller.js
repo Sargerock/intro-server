@@ -23,9 +23,11 @@ export const signUp = async (req, res) => {
 export const signIn = async (req, res) => {
 	const { email, password } = req.body;
 	const user = await User.findOne({ where: { email } });
-	if (!user) throw new ValidationError(null, "Incorrect email or password");
+	if (!user)
+		throw new ValidationError({ password: "Incorrect email or password" });
 	const match = await bcrypt.compare(password, user.password);
-	if (!match) throw new ValidationError(null, "Incorrect email or password");
+	if (!match)
+		throw new ValidationError({ password: "Incorrect email or password" });
 
 	const { accessToken, refreshToken } = createTokens({ id: user.id });
 	Auth.create({ refreshToken, accessToken });
