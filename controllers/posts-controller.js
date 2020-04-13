@@ -38,9 +38,13 @@ export const createPost = async (req, res) => {
 
 	const post = await user.createPost({ text });
 
-	for (let i = 0; i < tags.length; i++) {
-		const [tag] = await Tag.findOrCreate({ where: { tag: tags[i] } });
-		post.addTag(tag);
+	if (tags) {
+		for (let i = 0; i < tags.length; i++) {
+			const [tag] = await Tag.findOrCreate({
+				where: { tag: tags[i].toLowerCase() },
+			});
+			post.addTag(tag);
+		}
 	}
 
 	res.status(201).json({
@@ -63,11 +67,21 @@ export const deletePost = async (req, res) => {
 export const updatePost = async (req, res) => {
 	const userId = req.id;
 	const postId = req.params.id;
-	const text = req.body.text;
+	const { text, tags: reqTags } = req.body;
 
 	const post = await Post.findOne({ where: { id: postId, userId } });
 	if (!post) throw new HandledError("Not found", 404);
 
+	if (reqTags) {
+		const tags = [];
+		for (let i = 0; i < reqTags.length; i++) {
+			const [tag] = await Tag.findOrCreate({
+				where: { tag: reqTags[i].toLowerCase() },
+			});
+			tags.push(tag);
+		}
+		await post.setTags(tags);
+	}
 	await post.update({ text });
 
 	res.status(200).json(post);

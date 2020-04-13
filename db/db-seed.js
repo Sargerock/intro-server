@@ -7,7 +7,7 @@ export default async () => {
 		password: "testdrive",
 	});
 	const user2 = await User.create({
-		userName: "Another User",
+		userName: "AnotherUser",
 		email: "user2@mail.com",
 		password: "password",
 	});
@@ -17,7 +17,20 @@ export default async () => {
 		const randomPosition = Math.floor(Math.random() * 2);
 		await users[randomPosition].createPost({ text: `Post text ${i}` });
 	}
-	Tag.create({ tag: "stayathome" });
-	Tag.create({ tag: "cats" });
+	const tag1 = await Tag.create({ tag: "stayathome" });
+	const tag2 = await Tag.create({ tag: "cats" });
+
+	(
+		await user1.createPost({
+			text: "@AnotherUser #stayathome and play with #cats",
+		})
+	).setTags([tag1, tag2]);
+
+	(
+		await user2.createPost({
+			text: "Ok @TestDriveUser #cats",
+		})
+	).setTags([tag2]);
+
 	console.log("Db seeding successfully finished");
 };
