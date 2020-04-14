@@ -5,11 +5,11 @@ dotenv.config();
 export const {
 	PORT,
 	DB_NAME,
-	USER_NAME,
-	USER_PASSWORD,
+	DB_USERNAME,
+	DB_USER_PASSWORD,
 	HOST,
-	SECRET,
+	JWT_SECRET,
 	EXPIRES_ACCESS,
 	EXPIRES_REFRESH,
-	SEED
+	SEED,
 } = process.env;

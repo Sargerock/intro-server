@@ -1,6 +1,5 @@
 import Sequelize from "sequelize";
-
-import { hashPassword } from "../utils";
+import bcrypt from "bcrypt";
 
 export class User extends Sequelize.Model {
 	toJSON() {
@@ -35,7 +34,7 @@ export default (sequelize) => {
 		{
 			hooks: {
 				beforeCreate: async (user) => {
-					user.password = await hashPassword(user.password);
+					user.password = await bcrypt.hash(user.password, 10);
 				},
 			},
 			sequelize,
@@ -46,6 +45,5 @@ export default (sequelize) => {
 	User.associate = (models) => {
 		User.hasMany(models.post);
 	};
-
 	return User;
 };

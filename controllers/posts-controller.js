@@ -1,29 +1,31 @@
-const { Op } = require("sequelize");
+import { Op } from "sequelize";
 
 import { Post, User, Tag } from "../models";
-import { HandledError } from "../utils/errors";
+import { getTags } from "../utils/";
 
 export const getPosts = async (req, res) => {
 	const { sort, order, offset, limit, tag } = req.query;
 	const userName = req.params.userName;
 
-	const include = [
-		{
-			model: User,
-			attributes: ["userName"],
-		},
-		{
-			model: Tag,
-			attributes: ["tag"],
-		},
-	];
+	const userInclude = {
+		model: User,
+		attributes: ["userName"],
+	};
+	const tagInclude = {
+		model: Tag,
+		attributes: ["tag"],
+	};
 
-	if (userName) include[0].where = { userName };
-	if (tag) include[1].where = { tag };
+	if (userName) {
+		userInclude.where = { userName };
+	}
+	if (tag) {
+		tagInclude.where = { tag };
+	}
 
 	const { rows, count } = await Post.findAndCountAll({
 		attributes: ["id", "text", "userId", "createdAt"],
-		include: include,
+		include: [userInclude, tagInclude],
 		order: [[sort || "createdAt", order || "desc"]],
 		offset,
 		limit,
@@ -34,60 +36,45 @@ export const getPosts = async (req, res) => {
 
 export const createPost = async (req, res) => {
 	const { user } = req;
-	const { text, tags } = req.body;
+	const { text } = req.body;
 
-	const post = await user.createPost({ text });
+	const post = await user.createPost({ text: text.replace(/>>>/g, "") });
 
-	if (tags) {
-		for (let i = 0; i < tags.length; i++) {
-			const [tag] = await Tag.findOrCreate({
-				where: { tag: tags[i].toLowerCase() },
-			});
-			post.addTag(tag);
-		}
-	}
+	const tags = await Promise.all(
+		getTags(text).map((tag) => Tag.findOrCreate({ where: { tag } }))
+	);
+
+	post.setTags(tags);
 
 	res.status(201).json({
 		...post.toJSON(),
-		user: { userName: user.userName },
+		user,
 	});
 };
 
 export const deletePost = async (req, res) => {
-	const userId = req.id;
+	const post = req.post;
 	const postId = req.params.id;
 
-	const post = await Post.findOne({ where: { id: postId, userId } });
-	if (!post) throw new HandledError("Not found", 404);
 	post.destroy();
 
 	res.status(200).json({ id: postId });
 };
 
 export const updatePost = async (req, res) => {
-	const userId = req.id;
-	const postId = req.params.id;
-	const { text, tags: reqTags } = req.body;
+	const post = req.post;
+	const text = req.body.text;
 
-	const post = await Post.findOne({ where: { id: postId, userId } });
-	if (!post) throw new HandledError("Not found", 404);
-
-	if (reqTags) {
-		const tags = [];
-		for (let i = 0; i < reqTags.length; i++) {
-			const [tag] = await Tag.findOrCreate({
-				where: { tag: reqTags[i].toLowerCase() },
-			});
-			tags.push(tag);
-		}
-		await post.setTags(tags);
-	}
-	await post.update({ text });
+	const tags = await Promise.all(
+		getTags(text).map((tag) => Tag.findOrCreate({ where: { tag } }))
+	);
+	await post.setTags(tags);
+	await post.update({ text: text.replace(/>>>/g, "") });
 
 	res.status(200).json(post);
 };
 
-export const findTags = async (req, res) => {
+export const findTagsAutocomplete = async (req, res) => {
 	const tag = req.params.tag;
 
 	const users = await Tag.findAll({

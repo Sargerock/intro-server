@@ -22,6 +22,5 @@ export default (sequelize) => {
 		Post.belongsTo(models.user);
 		Post.belongsToMany(models.tag, { through: "posts-tags" });
 	};
-
 	return Post;
 };

@@ -1,10 +1,9 @@
 import fs from "fs";
 import path from "path";
 
-const basename = path.basename(__filename);
-const models = {};
-
 export const initModels = (sequelize) => {
+	const models = sequelize.models;
+	const basename = path.basename(__filename);
 	fs.readdirSync(__dirname)
 		.filter((file) => {
 			return (
@@ -23,7 +22,6 @@ export const initModels = (sequelize) => {
 	}
 };
 
-export { Auth } from "./auth";
 export { Post } from "./post";
 export { User } from "./user";
 export { Tag } from "./tag";

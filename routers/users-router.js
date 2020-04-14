@@ -1,11 +1,14 @@
-import router from "express-promise-router";
-import authGuard from "../middleware/auth-guard";
-import { getUser, findUsers } from "../controllers/users-controller";
+import createRouter from "express-promise-router";
+import { authorizationGuard } from "../middleware/authorization-guard";
+import {
+	getUser,
+	findUsersAutocomplete,
+} from "../controllers/users-controller";
 
 // /api/users
-const route = router();
+const router = createRouter();
 
-route.get("/find/:username", authGuard, findUsers);
-route.get("/:username", authGuard, getUser);
+router.get("/find/:username", authorizationGuard, findUsersAutocomplete);
+router.get("/:username", authorizationGuard, getUser);
 
-export default route;
+export default router;

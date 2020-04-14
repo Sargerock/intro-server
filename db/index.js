@@ -1,9 +1,10 @@
-import Sequelize from "sequelize";
+import { Sequelize } from "sequelize";
 
-import { DB_NAME, USER_NAME, USER_PASSWORD, HOST } from "../config";
+import { DB_NAME, DB_USERNAME, DB_USER_PASSWORD, HOST, SEED } from "../config";
 import { initModels } from "../models";
+import dbSeed from "./db-seed";
 
-export const sequelize = new Sequelize(DB_NAME, USER_NAME, USER_PASSWORD, {
+const sequelize = new Sequelize(DB_NAME, DB_USERNAME, DB_USER_PASSWORD, {
 	host: HOST,
 	dialect: "postgres",
 	logging: false,

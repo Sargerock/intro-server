@@ -1,18 +1,20 @@
-const { Op } = require("sequelize");
+import { Op } from "sequelize";
 
 import { User } from "../models";
-import { HandledError } from "../utils/errors";
 
 export const getUser = async (req, res) => {
 	const userName = req.params.username;
 
 	const user = await User.findOne({ where: { userName } });
-	if (!user) throw new HandledError("User not found.", 404);
+	if (!user) {
+		res.status(404).json({ message: "User not found" });
+		return;
+	}
 
 	res.status(200).json(user);
 };
 
-export const findUsers = async (req, res) => {
+export const findUsersAutocomplete = async (req, res) => {
 	const userName = req.params.username;
 
 	const users = await User.findAll({

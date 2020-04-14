@@ -7,6 +7,7 @@ Content-Type: application/json
 
 {"email": "testdrive@mail.com", "password": "testdrive"}
 
+@accessToken = {{signIn.response.body.accessToken}}
 ### Sign Up
 
 POST http://localhost:8000/api/auth/sign-up HTTP/1.1
@@ -14,52 +15,40 @@ Content-Type: application/json
 
 {"email": "user3@mail.com", "password": "testdrive", "userName": "User3"}
 
-### Refresh token
-
-@authToken = {{signIn.response.body.accessToken}}
-@refreshToken = {{signIn.response.body.refreshToken}}
-POST http://localhost:8000/api/auth/refresh HTTP/1.1
-Content-Type: application/json
-Authorization: Bearer {{authToken}}
-
-{
-	"refreshToken": "{{refreshToken}}"
-}
-
 ### Get me
 
 GET http://localhost:8000/api/auth/user HTTP/1.1
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{accessToken}}
 
 ### Get all posts
 
 GET http://localhost:8000/api/posts?order=desc&limit=5&offset=0 HTTP/1.1
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{accessToken}}
 
 ### Create post
 
 POST http://localhost:8000/api/posts/ HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{accessToken}}
 
 {"text": "Post text from client"}
 
 ### Delete post
 
 DELETE http://localhost:8000/api/posts/11 HTTP/1.1
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{accessToken}}
 
 ### Update post
 
-PUT http://localhost:8000/api/posts/12 HTTP/1.1
+PUT http://localhost:8000/api/posts/23 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{accessToken}}
 
 {"text": "Updated message"}
 
 ### Get user
 
 GET http://localhost:8000/api/users/TestDriveUser HTTP/1.1
-Authorization: Bearer {{authToken}}
+Authorization: Bearer {{accessToken}}
 
 ###

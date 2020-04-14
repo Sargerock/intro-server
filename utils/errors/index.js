@@ -1,23 +1,17 @@
-export class HandledError extends Error {
-	constructor(message, status) {
-		super(message);
-		this.status = status || 500;
+export const errorHandler = (err, req, res, next) => {
+	if (err.name === "ValidationError") {
+		const errors = err.inner.reduce(
+			(acc, error) => ({
+				...acc,
+				[error.path]: [...(acc[error.path] || []), error.message + "\n"],
+			}),
+			{}
+		);
+		res.status(422).json({ message: "Validation error", errors });
+	} else if (err.name === "TokenExpiredError") {
+		res.status(401).json({ message: err.message });
+	} else {
+		console.log(err);
+		res.status(500).json({ message: "Internal server error" });
 	}
-}
-
-export class ValidationError extends HandledError {
-	constructor(errors, message, status) {
-		super(message || "Incorrect data provided");
-		this.name = this.constructor.name;
-		this.status = status || 400;
-		this.errors = errors || {};
-	}
-}
-
-export class AuthorizationError extends HandledError {
-	constructor(message, status) {
-		super(message || "Unauthorized");
-		this.name = this.constructor.name;
-		this.status = status || 401;
-	}
-}
+};

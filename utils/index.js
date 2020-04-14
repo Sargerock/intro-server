@@ -1,40 +1,23 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+export const createRequestValidator = ({ body, params, query }) => async (
+	req,
+	res,
+	next
+) => {
+	body && (await body.validate(req.body, { abortEarly: false }));
+	params && (await params.validate(req.params, { abortEarly: false }));
+	query && (await query.validate(req.query, { abortEarly: false }));
 
-import { SECRET, EXPIRES_ACCESS, EXPIRES_REFRESH } from "../config";
-import { ValidationError } from "./errors";
-
-export const hashPassword = async (password) => {
-	return await bcrypt.hash(password, 10);
-};
-
-export const createTokens = (payload) => {
-	const accessToken = createToken(payload, EXPIRES_ACCESS);
-	const refreshToken = createToken(payload, EXPIRES_REFRESH);
-
-	return { accessToken, refreshToken };
-};
-
-export const createToken = (payload, expiresIn) => {
-	return jwt.sign(payload, SECRET, { expiresIn });
-};
-
-export const getAccessToken = (request) => {
-	let accessToken = request.header("Authorization");
-	if (!accessToken) {
-		throw new ValidationError("Access token is required");
-	}
-	return accessToken.replace("Bearer ", "");
-};
-
-export const createRequestValidator = (
-	bodySchema,
-	paramsSchema,
-	querySchema
-) => async (req, res, next) => {
-	if (bodySchema) await bodySchema.validate(req.body, { abortEarly: false });
-	if (paramsSchema)
-		await paramsSchema.validate(req.params, { abortEarly: false });
-	if (querySchema) await querySchema.validate(req.query, { abortEarly: false });
 	next();
+};
+
+export const getTags = (text) => {
+	const tags = [];
+	let matchResult = [];
+
+	while ((matchResult = text.match(/#(>>>)?(\w+)(>>>)?/im))) {
+		tags.push(matchResult[2].toLowerCase());
+		text = text.slice(matchResult["index"] + 1);
+	}
+
+	return tags;
 };
