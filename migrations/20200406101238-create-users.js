@@ -19,21 +19,23 @@ module.exports = {
 				allowNull: false,
 			},
 			password: {
-				type: Sequelize.STRING(64),
+				type: Sequelize.STRING(128),
 				allowNull: false,
 			},
 			createdAt: {
+				type: "TIMESTAMP",
+				defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
 				allowNull: false,
-				type: Sequelize.DATE,
 			},
 			updatedAt: {
+				type: "TIMESTAMP",
+				defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
 				allowNull: false,
-				type: Sequelize.DATE,
 			},
 		});
 	},
 
-	down: (queryInterface, Sequelize) => {
+	down: (queryInterface) => {
 		return queryInterface.dropTable("users");
 	},
 };

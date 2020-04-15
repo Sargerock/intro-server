@@ -9,7 +9,6 @@ export const {
 	DB_USER_PASSWORD,
 	HOST,
 	JWT_SECRET,
-	EXPIRES_ACCESS,
-	EXPIRES_REFRESH,
+	TOKEN_EXPIRE_TIME,
 	SEED,
 } = process.env;

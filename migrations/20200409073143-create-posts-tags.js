@@ -2,27 +2,29 @@
 
 module.exports = {
 	up: (queryInterface, Sequelize) => {
-		return queryInterface.createTable("posts_tags", {
-			PostId: {
+		return queryInterface.createTable("posts-tags", {
+			postId: {
 				type: Sequelize.INTEGER,
 				primaryKey: true,
 			},
-			TagId: {
+			tagId: {
 				type: Sequelize.INTEGER,
 				primaryKey: true,
 			},
 			createdAt: {
+				type: "TIMESTAMP",
+				defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
 				allowNull: false,
-				type: Sequelize.DATE,
 			},
 			updatedAt: {
+				type: "TIMESTAMP",
+				defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
 				allowNull: false,
-				type: Sequelize.DATE,
 			},
 		});
 	},
 
-	down: (queryInterface, Sequelize) => {
-		return queryInterface.dropTable("posts_tags");
+	down: (queryInterface) => {
+		return queryInterface.dropTable("posts-tags");
 	},
 };

@@ -1,26 +1,23 @@
 import Sequelize from "sequelize";
+import sequelize from "../db";
 
-export class Tag extends Sequelize.Model {}
+export class Tag extends Sequelize.Model {
+	static associate(models) {
+		this.belongsToMany(models.Post, { through: "posts-tags" });
+	}
+}
 
-export default (sequelize) => {
-	Tag.init(
-		{
-			id: {
-				type: Sequelize.INTEGER,
-				primaryKey: true,
-				autoIncrement: true,
-			},
-			tag: {
-				type: Sequelize.STRING(64),
-				allowNull: false,
-			},
+Tag.init(
+	{
+		id: {
+			type: Sequelize.INTEGER,
+			primaryKey: true,
+			autoIncrement: true,
 		},
-		{ sequelize, modelName: "tag" }
-	);
-
-	Tag.associate = (models) => {
-		Tag.belongsToMany(models.post, { through: "posts-tags" });
-	};
-
-	return Tag;
-};
+		tag: {
+			type: Sequelize.STRING(64),
+			allowNull: false,
+		},
+	},
+	{ sequelize, modelName: "tag" }
+);

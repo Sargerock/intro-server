@@ -9,6 +9,7 @@ export const postAccessGuard = async (req, res, next) => {
 		res.status(404).json({ message: "Post not found" });
 		return;
 	}
+
 	if (post.userId !== userId) {
 		res.status(403).json({ message: "Forbidden" });
 		return;

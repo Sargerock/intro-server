@@ -14,12 +14,12 @@ app.use(express.json());
 app.use(router);
 app.use(errorHandler);
 
-sequelize.sync({ force: SEED }).then(async () => {
-	if (SEED) {
+if (SEED) {
+	sequelize.sync({ force: true }).then(async () => {
 		await dbSeed();
-	}
-	console.log(`Database successfully synchronized`);
-	app.listen(PORT || 8000, () => {
-		console.log("Server is running on port: ", PORT);
+		console.log(`Database successfully synchronized`);
 	});
+}
+app.listen(PORT || 8000, () => {
+	console.log("Server is running on port: ", PORT);
 });

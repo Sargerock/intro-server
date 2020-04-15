@@ -8,7 +8,9 @@ export const signUp = async (req, res) => {
 	const user = req.body;
 
 	const { id } = await User.create(user);
-	const accessToken = jwt.sign({ id }, JWT_SECRET, TOKEN_EXPIRE_TIME);
+	const accessToken = jwt.sign({ id }, JWT_SECRET, {
+		expiresIn: TOKEN_EXPIRE_TIME,
+	});
 
 	res.status(201).json({ accessToken });
 };
@@ -29,7 +31,9 @@ export const signIn = async (req, res) => {
 			.json({ errors: { password: "Incorrect email or password" } });
 		return;
 	}
-	const accessToken = jwt.sign({ id: user.id }, JWT_SECRET, TOKEN_EXPIRE_TIME);
+	const accessToken = jwt.sign({ id: user.id }, JWT_SECRET, {
+		expiresIn: TOKEN_EXPIRE_TIME,
+	});
 
 	res.status(201).json({ accessToken });
 };

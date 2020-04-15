@@ -21,17 +21,19 @@ module.exports = {
 				},
 			},
 			createdAt: {
+				type: "TIMESTAMP",
+				defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
 				allowNull: false,
-				type: Sequelize.DATE,
 			},
 			updatedAt: {
+				type: "TIMESTAMP",
+				defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
 				allowNull: false,
-				type: Sequelize.DATE,
 			},
 		});
 	},
 
-	down: (queryInterface, Sequelize) => {
+	down: (queryInterface) => {
 		return queryInterface.dropTable("posts");
 	},
 };

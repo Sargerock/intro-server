@@ -1,27 +1,11 @@
-import fs from "fs";
-import path from "path";
+import { Post } from "./post";
+import { Tag } from "./tag";
+import { User } from "./user";
 
-export const initModels = (sequelize) => {
-	const models = sequelize.models;
-	const basename = path.basename(__filename);
-	fs.readdirSync(__dirname)
-		.filter((file) => {
-			return (
-				file.indexOf(".") !== 0 && file !== basename && file.slice(-3) === ".js"
-			);
-		})
-		.forEach((file) => {
-			const model = sequelize["import"](path.join(__dirname, file));
-			models[model.name] = model;
-		});
+const models = { Post, User, Tag };
 
-	for (const key in models) {
-		if (models[key].associate) {
-			models[key].associate(models);
-		}
-	}
-};
+Object.values(models)
+	.filter((model) => typeof model.associate === "function")
+	.forEach((model) => model.associate(models));
 
-export { Post } from "./post";
-export { User } from "./user";
-export { Tag } from "./tag";
+module.exports = models;
