@@ -4,7 +4,7 @@ import { Post, User, Tag } from "../models";
 import { getTags } from "../utils/";
 
 export const getPosts = async (req, res) => {
-	const { sort, order, offset, limit, tag } = req.query;
+	const { sort, order, offset, limit, tag, mentionName } = req.query;
 	const userName = req.params.userName;
 
 	const userInclude = {
@@ -23,13 +23,19 @@ export const getPosts = async (req, res) => {
 		tagInclude.where = { tag };
 	}
 
-	const { rows, count } = await Post.findAndCountAll({
+	const query = {
 		attributes: ["id", "text", "userId", "createdAt"],
 		include: [userInclude, tagInclude],
 		order: [[sort || "createdAt", order || "desc"]],
 		offset,
 		limit,
-	});
+	}
+
+	if (mentionName) {
+		query.where = { text: { [Op.like]: `%@${mentionName}%` }}
+	}
+
+	const { rows, count } = await Post.findAndCountAll(query);
 
 	res.status(200).json({ posts: rows, totalCount: count });
 };

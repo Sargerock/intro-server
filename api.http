@@ -5,15 +5,25 @@
 POST http://localhost:8000/api/auth/sign-in HTTP/1.1
 Content-Type: application/json
 
-{"email": "testdrive@mail.com", "password": "testdrive"}
+{
+  "email": "testdrive@mail.com",
+  "password": "testdrive"
+}
 
-@accessToken = {{signIn.response.body.accessToken}}
+> {%
+ client.global.set("accessToken", response.body.accessToken);
+ %}
+
 ### Sign Up
 
 POST http://localhost:8000/api/auth/sign-up HTTP/1.1
 Content-Type: application/json
 
-{"email": "user3@mail.com", "password": "testdrive", "userName": "User3"}
+{
+  "email": "user3@mail.com",
+  "password": "testdrive",
+  "userName": "User3"
+}
 
 ### Get me
 
@@ -22,7 +32,7 @@ Authorization: Bearer {{accessToken}}
 
 ### Get all posts
 
-GET http://localhost:8000/api/posts?order=desc&limit=5&offset=0 HTTP/1.1
+GET http://localhost:8000/api/posts?order=desc&limit=5&offset=0&mentionName=TestDriveUser HTTP/1.1
 Authorization: Bearer {{accessToken}}
 
 ### Create post
@@ -31,7 +41,9 @@ POST http://localhost:8000/api/posts/ HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
-{"text": "Post text from client"}
+{
+  "text": "Post text from client"
+}
 
 ### Delete post
 
@@ -44,7 +56,9 @@ PUT http://localhost:8000/api/posts/1 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
-{"text": "Updated message"}
+{
+  "text": "Updated message"
+}
 
 ### Get user
 
