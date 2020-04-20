@@ -4,9 +4,10 @@ import sequelize from "../db";
 
 export class User extends Sequelize.Model {
 	toJSON() {
-		const { id, userName } = this.get();
-		return { id, userName };
+		const {id, userName} = this.get();
+		return {id, userName};
 	}
+
 	static associate(models) {
 		this.hasMany(models.Post);
 	}
@@ -39,6 +40,9 @@ User.init(
 			beforeCreate: async (user) => {
 				user.password = await bcrypt.hash(user.password, 10);
 			},
+			beforeUpdate: async (user) => {
+				user.password = await bcrypt.hash(user.password, 10);
+			}
 		},
 		sequelize,
 		modelName: "user",

@@ -1,17 +1,21 @@
 
 ### Sign In
 
-# @name signIn
 POST http://localhost:8000/api/auth/sign-in HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "testdrive@mail.com",
-  "password": "testdrive"
+  "email": "user3@mail.com",
+  "password": "password"
 }
 
 > {%
  client.global.set("accessToken", response.body.accessToken);
+
+ client.test("Sign in", function() {
+        client.assert(response.status === 201, "Sign in didnt respond with status 201");
+        client.assert(response.body.accessToken !== undefined, "Sign in must response must contain accessToken");
+    })
  %}
 
 ### Sign Up
@@ -25,15 +29,37 @@ Content-Type: application/json
   "userName": "User3"
 }
 
+> {%
+ client.test("Sign up", function() {
+ 	if(response.status !== 422){
+ 		client.assert(response.status === 201, "Sign up didnt respond with status 201");
+        client.assert(response.body.accessToken !== undefined, "Sign up must response must contain accessToken");
+ 	}
+    })
+ %}
+
 ### Get me
 
 GET http://localhost:8000/api/auth/user HTTP/1.1
 Authorization: Bearer {{accessToken}}
 
+> {%
+    client.test("Get me", function() {
+        client.assert(response.status === 200, "Cant get authenticated user");
+        client.assert(response.body.userName === "User3", "Response contains wrong userName");
+    })
+ %}
+
 ### Get all posts
 
-GET http://localhost:8000/api/posts?order=desc&limit=5&offset=0&mentionName=TestDriveUser HTTP/1.1
+GET http://localhost:8000/api/posts?order=desc&limit=5&offset=0 HTTP/1.1
 Authorization: Bearer {{accessToken}}
+
+> {%
+    client.test("Get all posts", function() {
+        client.assert(response.status === 200, "Cant get posts");
+    })
+ %}
 
 ### Create post
 
@@ -45,10 +71,26 @@ Authorization: Bearer {{accessToken}}
   "text": "Post text from client"
 }
 
+> {%
+    client.global.set("postId", response.body.id)
+
+    client.test("Create post", function() {
+        client.assert(response.status === 201, "Cant create post");
+        client.assert(response.body.id !== undefined, "Response must contain post id");
+    })
+ %}
+
 ### Delete post
 
-DELETE http://localhost:8000/api/posts/1 HTTP/1.1
+DELETE http://localhost:8000/api/posts/{{postId}} HTTP/1.1
 Authorization: Bearer {{accessToken}}
+
+> {%
+    client.test("Create post", function() {
+        client.assert(response.status === 200, "Cant delete post");
+        client.assert(response.body.id !== undefined, "Response must contain post id");
+    })
+ %}
 
 ### Update post
 
@@ -64,5 +106,30 @@ Authorization: Bearer {{accessToken}}
 
 GET http://localhost:8000/api/users/TestDriveUser HTTP/1.1
 Authorization: Bearer {{accessToken}}
+
+> {%
+    client.test("Get user", function() {
+        client.assert(response.status === 200, "Cant get user");
+        client.assert(response.body.userName === "TestDriveUser", "Response contains wrong userName");
+    })
+ %}
+
+### Change password
+
+PUT http://localhost:8000/api/users/ HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "oldPassword": "password",
+  "newPassword": "password"
+}
+
+> {%
+    client.test("Get user", function() {
+        client.assert(response.status === 200, "Cant get user");
+        client.assert(response.body.message !== undefined, "Response must contain message");
+    })
+ %}
 
 ###
