@@ -5,26 +5,26 @@ import {
 	createPost,
 	deletePost,
 	updatePost,
-	findTagsAutocomplete,
+	autocompleteTag,
 } from "../controllers/posts-controller";
-import { authorizationGuard } from "../middleware/authorization-guard";
-import { createRequestValidator } from "../utils";
+import {authorizationGuard} from "../middleware/authorization-guard";
+import {createRequestValidator} from "../utils";
 import postSchema from "../utils/schemas/post-schema";
 import postQuerySchema from "../utils/schemas/post-query-schema";
-import { postAccessGuard } from "../middleware/post-access-guard";
+import {postAccessGuard} from "../middleware/post-access-guard";
 
 //  /api/posts
 const router = createRouter();
 
-router.get("/find/:tag", authorizationGuard, findTagsAutocomplete);
+router.get("/autocomplete/:tag", autocompleteTag);
 router.get(
 	"/:userName?",
-	[authorizationGuard, createRequestValidator({ query: postQuerySchema })],
+	[authorizationGuard, createRequestValidator({query: postQuerySchema})],
 	getPosts
 );
 router.post(
 	"/",
-	[authorizationGuard, createRequestValidator({ body: postSchema })],
+	[authorizationGuard, createRequestValidator({body: postSchema})],
 	createPost
 );
 router.delete("/:id", [authorizationGuard, postAccessGuard], deletePost);
@@ -32,7 +32,7 @@ router.put(
 	"/:id",
 	[
 		authorizationGuard,
-		createRequestValidator({ body: postSchema }),
+		createRequestValidator({body: postSchema}),
 		postAccessGuard,
 	],
 	updatePost

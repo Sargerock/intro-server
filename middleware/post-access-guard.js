@@ -1,18 +1,16 @@
-import { Post } from "../models";
+import {Post} from "../models";
 
 export const postAccessGuard = async (req, res, next) => {
 	const userId = req.user.id;
 	const postId = req.params.id;
 
-	const post = await Post.findOne({ where: { id: postId } });
+	const post = await Post.findOne({where: {id: postId}});
 	if (!post) {
-		res.status(404).json({ message: "Post not found" });
-		return;
+		return res.status(404).json({message: "Post not found"});
 	}
 
 	if (post.userId !== userId) {
-		res.status(403).json({ message: "Forbidden" });
-		return;
+		return res.status(403).json({message: "Forbidden"});
 	}
 
 	req.post = post;

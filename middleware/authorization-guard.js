@@ -1,22 +1,20 @@
 import jwt from "jsonwebtoken";
 
-import { JWT_SECRET } from "../config";
-import { User } from "../models/user";
+import {JWT_SECRET} from "../config";
+import {User} from "../models/user";
 
 export const authorizationGuard = async (req, res, next) => {
 	let accessToken;
 	try {
 		accessToken = req.header("Authorization").split(" ")[1];
 	} catch (e) {
-		res.status(401).json({ message: "Token not provided" });
-		return;
+		return res.status(401).json({message: "Token not provided"});
 	}
 
-	const { id } = jwt.verify(accessToken, JWT_SECRET);
-	const user = await User.findOne({ where: { id } });
+	const {id} = jwt.verify(accessToken, JWT_SECRET);
+	const user = await User.findOne({where: {id}});
 	if (!user) {
-		res.status(401).json({ message: "Unauthorized" });
-		return;
+		return res.status(401).json({message: "Unauthorized"});
 	}
 
 	req.accessToken = accessToken;

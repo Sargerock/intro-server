@@ -8,14 +8,13 @@ export const getUser = async (req, res) => {
 
 	const user = await User.findOne({where: {userName}});
 	if (!user) {
-		res.status(404).json({message: "User not found"});
-		return;
+		return res.status(404).json({message: "User not found"});
 	}
 
 	res.status(200).json(user);
 };
 
-export const findUsersAutocomplete = async (req, res) => {
+export const autocompleteUsername = async (req, res) => {
 	const userName = req.params.username;
 
 	const users = await User.findAll({
@@ -31,10 +30,7 @@ export const updateUser = async (req, res) => {
 	const {oldPassword, newPassword} = req.body;
 
 	if (!(await bcrypt.compare(oldPassword, user.password))) {
-		res
-			.status(409)
-			.json({errors: {oldPassword: "Incorrect password"}});
-		return;
+		return res.status(409).json({errors: {oldPassword: "Incorrect password"}});
 	}
 
 	await user.update({password: newPassword});

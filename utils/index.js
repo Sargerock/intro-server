@@ -15,7 +15,7 @@ export const getTags = (text) => {
 	let matchResult = [];
 
 	while ((matchResult = text.match(/#(>>>)?(\w+)(>>>)?/im))) {
-		tags.push(matchResult[2].toLowerCase());
+		tags.push(matchResult[2]);
 		text = text.slice(matchResult["index"] + 1);
 	}
 
