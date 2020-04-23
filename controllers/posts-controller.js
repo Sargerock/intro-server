@@ -9,10 +9,11 @@ export const getPosts = async (req, res) => {
 
 	const query = {
 		attributes: ["id", "text", "userId", "createdAt"],
+		distinct: true,
 		include: [
 			{
 				model: User,
-				attributes: ["userName"],
+				attributes: ["userName", "avatarUrl"],
 				[userName && "where"]: {userName}
 			},
 			{

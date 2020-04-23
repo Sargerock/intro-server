@@ -1,7 +1,9 @@
 import {Op} from "sequelize";
+import bcrypt from "bcrypt";
+import path from "path"
+import fs from "fs";
 
 import {User} from "../models";
-import bcrypt from "bcrypt";
 
 export const getUser = async (req, res) => {
 	const userName = req.params.username;
@@ -36,4 +38,27 @@ export const updateUser = async (req, res) => {
 	await user.update({password: newPassword});
 
 	res.status(200).json({message: "Password changed"});
+}
+
+export const updateAvatar = async (req, res) => {
+	const user = req.user;
+
+	if (!req.files) {
+		return res.status(422).send("No files were uploaded");
+	}
+
+	const avatar = req.files.avatar;
+	const fileName = user.userName + Date.now() + avatar.name.substr(avatar.name.lastIndexOf('.'));
+
+	if(user.avatarUrl !== "uploads/avatars/default.jpg"){
+		try{
+			fs.unlinkSync(path.resolve(__dirname, `../${user.avatarUrl}`));
+		} catch (e) {
+			console.log(e.message);
+		}
+	}
+	await avatar.mv(path.resolve(__dirname, `../uploads/avatars/${fileName}`));
+	await user.update({avatarUrl: `uploads/avatars/${fileName}`});
+
+	res.status(201).json({avatarUrl: user.avatarUrl});
 }

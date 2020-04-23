@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import fileUpload from "express-fileupload"
 
 import { PORT, SEED } from "./config";
 import sequelize from "./db";
@@ -11,6 +12,11 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(fileUpload({
+	createParentPath: true,
+	limits: { fileSize: 10 * 1024 * 1024 },
+}))
+app.use("/uploads", express.static("uploads"));
 app.use(router);
 app.use(errorHandler);
 
