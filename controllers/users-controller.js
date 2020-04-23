@@ -50,7 +50,7 @@ export const updateAvatar = async (req, res) => {
 	const avatar = req.files.avatar;
 	const fileName = user.userName + Date.now() + avatar.name.substr(avatar.name.lastIndexOf('.'));
 
-	if(user.avatarUrl !== "uploads/avatars/default.jpg"){
+	if(user.avatarUrl !== "uploads/avatars/default.png"){
 		try{
 			fs.unlinkSync(path.resolve(__dirname, `../${user.avatarUrl}`));
 		} catch (e) {
