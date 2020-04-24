@@ -4,6 +4,7 @@ import {
 	getUser,
 	autocompleteUsername, updateUser, updateAvatar,
 } from "../controllers/users-controller";
+import {avatarUploadGuard} from "../middleware/avatar-upload-guard";
 
 // /api/users
 const router = createRouter();
@@ -11,6 +12,6 @@ const router = createRouter();
 router.get("/autocomplete/:username", autocompleteUsername);
 router.get("/:username", authorizationGuard, getUser);
 router.put("/", authorizationGuard, updateUser);
-router.put("/upload/avatar", authorizationGuard, updateAvatar);
+router.put("/upload/avatar", [authorizationGuard, avatarUploadGuard], updateAvatar);
 
 export default router;

@@ -42,16 +42,11 @@ export const updateUser = async (req, res) => {
 
 export const updateAvatar = async (req, res) => {
 	const user = req.user;
-
-	if (!req.files) {
-		return res.status(422).send("No files were uploaded");
-	}
-
 	const avatar = req.files.avatar;
 	const fileName = user.userName + Date.now() + avatar.name.substr(avatar.name.lastIndexOf('.'));
 
-	if(user.avatarUrl !== "uploads/avatars/default.png"){
-		try{
+	if (user.avatarUrl !== "uploads/avatars/default.png") {
+		try {
 			fs.unlinkSync(path.resolve(__dirname, `../${user.avatarUrl}`));
 		} catch (e) {
 			console.log(e.message);
