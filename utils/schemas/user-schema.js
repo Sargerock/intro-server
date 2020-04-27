@@ -1,6 +1,7 @@
 import * as yup from "yup";
 
 import { User } from "../../models/user";
+import reservedNames from "../../db/reserved-usernames.json";
 
 const whitespaceTestOptions = {
 	name: "whitespace",
@@ -16,6 +17,12 @@ export default yup.object().shape({
 		.max(32, "Maximum name length is 32")
 		.test(whitespaceTestOptions)
 		.test("unique", "Name already taken", async function (value) {
+			if(reservedNames.includes(value)) {
+				return this.createError({
+					path: this.path,
+					message: "Unacceptable username",
+				});
+			}
 			if (await User.findOne({ where: { userName: value } }))
 				return this.createError({
 					path: this.path,
