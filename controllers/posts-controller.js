@@ -38,14 +38,7 @@ export const createPost = async (req, res) => {
 	const {text} = req.body;
 
 	const post = await user.createPost({text: text.replace(/>>>/g, "")});
-
-	const tags = await Promise.all(
-		getTags(text).map(async (tagName) => {
-			const [tag] = await Tag.findOrCreate({where: {tag: tagName}});
-			return tag;
-		})
-	);
-	post.setTags(tags);
+	await post.setTagsFromText(text);
 
 	res.status(201).json({
 		...post.toJSON(),
@@ -66,14 +59,7 @@ export const updatePost = async (req, res) => {
 	const post = req.post;
 	const text = req.body.text;
 
-	const tags = await Promise.all(
-		getTags(text).map(async (tagName) => {
-			const [tag] = await Tag.findOrCreate({where: {tag: tagName}});
-			return tag;
-		})
-	);
-
-	await post.setTags(tags);
+	await post.setTagsFromText(text);
 	await post.update({text: text.replace(/>>>/g, "")});
 
 	res.status(200).json(post);
